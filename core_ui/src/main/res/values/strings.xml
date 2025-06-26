@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">NumbersApp</string>
+    <string name="placeholder">Enter numbers</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="connection_restore">Connection restore</string>
+    <string name="math">Math</string>
+    <string name="trivia">Trivia</string>
+    <string name="year">Year</string>
+    <string name="date">Date</string>
+    <string name="get_fact">Get fact</string>
+    <string name="random">Random</string>
+    <string name="example">Example | </string>
+    <string name="show">Fullscreen</string>
+    <string name="hide">Hide</string>
+    <string name="placeholder_m">month</string>
+    <string name="placeholder_d">day</string>
+    <string name="collapse">Collapse</string>
+</resources>
