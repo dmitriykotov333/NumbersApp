@@ -2,6 +2,8 @@ package com.kotdev.numbersapp.data.di
 
 import android.content.Context
 import com.kotdev.numbersapp.core.network.NetworkObserver
+import com.kotdev.numbersapp.core.resource.ResourceManager
+import com.kotdev.numbersapp.core.resource.ResourceResolver
 import com.kotdev.numbersapp.data.HistoryRepository
 import com.kotdev.numbersapp.data.datastore.FilterPreferences
 import com.kotdev.numbersapp.database.FactDatabase
@@ -38,5 +40,13 @@ object MainModule {
     ): FilterPreferences {
         return FilterPreferences(context)
     }
+
+    @Provides
+    fun provideResourceManager(
+        @ApplicationContext context: Context
+    ): ResourceResolver {
+        return ResourceManager(context)
+    }
+
 
 }

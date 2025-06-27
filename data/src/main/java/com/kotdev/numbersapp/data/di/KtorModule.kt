@@ -1,6 +1,7 @@
 package com.kotdev.numbersapp.data.di
 
 import com.kotdev.numbersapp.core.BuildConfig
+import com.kotdev.numbersapp.core.resource.ResourceResolver
 import com.kotdev.numbersapp.data.FactRandomRepository
 import com.kotdev.numbersapp.data.FactRepositoryImpl
 import com.kotdev.numbersapp.data.ktor.KtorMainDataSource
@@ -70,8 +71,9 @@ object KtorModule {
     @Singleton
     @Provides
     fun provideKtorDataSource(
-        httpClient: HttpClient
-    ) = KtorMainDataSource(httpClient)
+        httpClient: HttpClient,
+        resourceResolver: ResourceResolver
+    ) = KtorMainDataSource(httpClient, resourceResolver)
 
     @Singleton
     @Provides

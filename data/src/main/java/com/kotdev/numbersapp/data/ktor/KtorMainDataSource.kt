@@ -3,6 +3,7 @@ package com.kotdev.numbersapp.data.ktor
 import android.util.Log
 import com.kotdev.numbersapp.core.api.ApiResponse
 import com.kotdev.numbersapp.core.api.prepare
+import com.kotdev.numbersapp.core.resource.ResourceResolver
 import com.kotdev.numbersapp.data.api.safeRequest
 import com.kotdev.numbersapp.data.extensions.toResult
 import com.kotdev.numbersapp.domain.entities.FactData
@@ -14,10 +15,13 @@ import io.ktor.http.path
 
 class KtorMainDataSource(
     private val httpClient: HttpClient,
+    private val resolver: ResourceResolver
 ) {
 
     suspend fun math(isRandom: Boolean = false, value: Int = -1): ApiResponse<FactData> {
-        val rst = httpClient.safeRequest<FactData> {
+        val rst = httpClient.safeRequest<FactData>(
+            resolver
+        ) {
             url {
                 method = HttpMethod.Get
                 if (!isRandom) {
@@ -32,7 +36,9 @@ class KtorMainDataSource(
     }
 
     suspend fun trivia(isRandom: Boolean = false, value: Int = -1): ApiResponse<FactData> {
-        val rst = httpClient.safeRequest<FactData> {
+        val rst = httpClient.safeRequest<FactData>(
+            resolver
+        ) {
             url {
                 method = HttpMethod.Get
                 if (!isRandom) {
@@ -46,7 +52,9 @@ class KtorMainDataSource(
     }
 
     suspend fun year(isRandom: Boolean = false, value: Int = -1): ApiResponse<FactData> {
-        val rst = httpClient.safeRequest<FactData> {
+        val rst = httpClient.safeRequest<FactData>(
+            resolver
+        ) {
             url {
                 method = HttpMethod.Get
                 if (!isRandom) {
@@ -64,7 +72,9 @@ class KtorMainDataSource(
         value1: Int = -1,
         value2: Int = -1
     ): ApiResponse<FactData> {
-        val rst = httpClient.safeRequest<FactData> {
+        val rst = httpClient.safeRequest<FactData>(
+            resolver
+        ) {
             url {
                 method = HttpMethod.Get
                 if (!isRandom) {

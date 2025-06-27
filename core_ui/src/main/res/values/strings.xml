@@ -15,4 +15,5 @@
     <string name="placeholder_m">month</string>
     <string name="placeholder_d">day</string>
     <string name="collapse">Collapse</string>
+    <string name="something_error">Something error</string>
 </resources>
