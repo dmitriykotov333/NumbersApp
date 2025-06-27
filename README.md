@@ -18,6 +18,7 @@ It is a work in progress 🚧.
 - Lotties
 - Paging library
 - Compose Navigation
+- Vibration
 - Convention gradle plugin
 
 ### Functional
@@ -38,6 +39,9 @@ It is a work in progress 🚧.
 
 ### Approximate time spent on the project
 
+https://github.com/user-attachments/assets/4a9d0054-258b-4668-8504-c63df372a1b4
+
+https://github.com/user-attachments/assets/feef5e83-fab8-4c8f-b376-91cb230831f7
 
 | UI | 8 Hours |
 
