@@ -37,7 +37,8 @@ It is a work in progress 🚧.
 
 
 ### Approximate time spent on the project
- 
-| ------------- | ------------- |
+
+
 | UI | 8 Hours |
+
 | Bussines |8 Hours |
