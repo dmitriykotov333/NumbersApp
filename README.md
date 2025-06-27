@@ -41,4 +41,4 @@ It is a work in progress 🚧.
 
 | UI | 8 Hours |
 
-| Bussines |8 Hours |
+| Bussines | 8 Hours |
