@@ -60,25 +60,18 @@ import com.kotdev.numbersapp.core_ui.modifiers.noRippleClickable
 import com.kotdev.numbersapp.core_ui.modifiers.shimmer
 import com.kotdev.numbersapp.core_ui.theme.FORMULAR
 import com.kotdev.numbersapp.core_ui.theme.GOTHIC
-import com.kotdev.numbersapp.core_ui.theme.GROTESK
 import com.kotdev.numbersapp.core_ui.theme.Theme
 import com.kotdev.numbersapp.presentation.screens.contents.main.EditTextContent
 import com.kotdev.numbersapp.presentation.screens.contents.main.TypeButtonsContent
 import com.kotdev.numbersapp.presentation.viewmodels.main.EditTextError
 import com.kotdev.numbersapp.presentation.viewmodels.main.MainEvent
+import com.kotdev.numbersapp.presentation.viewmodels.main.MainViewState
 import kotlinx.collections.immutable.persistentMapOf
 import kotlin.enums.EnumEntries
 
 @Composable
 internal fun MainContent(
-    count: Int,
-    description: String,
-    error: EditTextError,
-    isSending: Boolean,
-    isSendingRandom: Boolean,
-    number: String,
-    numberSecond: String,
-    type: UiType,
+    state: MainViewState,
     eventHandler: (MainEvent) -> Unit
 ) {
     Column(
@@ -101,7 +94,7 @@ internal fun MainContent(
                     .clip(RoundedCornerShape(6.dp))
                     .background(Color(0xD909305D))
                     .padding(8.dp),
-                fullText = "${stringResource(id = R.string.example)} ${description}",
+                fullText = "${stringResource(id = R.string.example)} ${state.description}",
                 hyperLinks = persistentMapOf(
                     stringResource(id = R.string.example) to SpanStyle(
                         color = Color(0xFFC8E8EA),
@@ -123,15 +116,15 @@ internal fun MainContent(
             )
             Spacer(Modifier.height(12.dp))
             EditTextContent(
-                isSendingRandom = isSendingRandom,
-                error = error,
-                number = number,
-                numberSecond = numberSecond,
-                type = type,
+                isSendingRandom = state.isSendingRandom,
+                error = state.error,
+                number = state.number,
+                numberSecond = state.numberSecond,
+                type = state.selectedRequest,
                 eventHandler = eventHandler
             )
             Spacer(Modifier.height(6.dp))
-            NumCounter(count = count)
+            NumCounter(count = state.count)
             Spacer(Modifier.height(12.dp))
         }
 
@@ -146,7 +139,7 @@ internal fun MainContent(
             modifier = Modifier
                 .padding(horizontal = 21.dp)
                 .fillMaxWidth()
-                .shimmer(isSending, ShimmerColor.WHITE)
+                .shimmer(state.isSending, ShimmerColor.WHITE)
                 .bounceClick(
                     from = 0.98f
                 ),

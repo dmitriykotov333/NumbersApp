@@ -1,24 +1,18 @@
 package com.kotdev.numbersapp.data
 
-import android.util.Log
 import com.kotdev.numbersapp.core.api.StatusRequest
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.data.ktor.KtorMainDataSource
 import com.kotdev.numbersapp.data.mappers.mapToFactRequestRandom
 import com.kotdev.numbersapp.data.network.networkBoundResource
-import com.kotdev.numbersapp.database.FactDatabase
 import com.kotdev.numbersapp.database.fact.FactDBO
 import com.kotdev.numbersapp.database.fact.FactDao
-import com.kotdev.numbersapp.domain.entities.FactData
-import com.kotdev.numbersapp.domain.repositories.FactRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.SerialName
-import androidx.room.withTransaction
 import com.kotdev.numbersapp.core.api.prepare
-import com.kotdev.numbersapp.data.mappers.mapToFactRequest
+import com.kotdev.numbersapp.data.mappers.mapToFactDBO
 import com.kotdev.numbersapp.domain.entities.FactRequest
 import javax.inject.Inject
 
@@ -48,12 +42,7 @@ class FactRandomRepository @Inject constructor(
             response
         },
         saveFetchResult = { server ->
-            val items = server.map {
-                FactDBO(
-                    type = it.prepare().data.type,
-                    description = it.prepare().data.text
-                )
-            }
+            val items = server.map { it.mapToFactDBO() }
             db.clean()
             db.inserts(items)
         })

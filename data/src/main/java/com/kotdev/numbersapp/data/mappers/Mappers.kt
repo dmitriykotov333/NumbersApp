@@ -1,10 +1,13 @@
 package com.kotdev.numbersapp.data.mappers
 
-import androidx.compose.runtime.Immutable
+import com.kotdev.numbersapp.core.api.ApiResponse
+import com.kotdev.numbersapp.core.api.prepare
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.data.extensions.toTypeRequest
+import com.kotdev.numbersapp.database.fact.FactDBO
+import com.kotdev.numbersapp.database.history.HistoryDBO
+import com.kotdev.numbersapp.domain.entities.FactData
 import com.kotdev.numbersapp.domain.entities.FactRequest
-import com.kotdev.numbersapp.domain.entities.History
 
 
 data class HistoryUI(
@@ -14,12 +17,19 @@ data class HistoryUI(
     val description: String
 )
 
-fun History.mapToHistoryUi(): HistoryUI {
+fun HistoryDBO.mapToHistoryUi(): HistoryUI {
     return HistoryUI(
-        id = this.id,
-        numbers = this.numbers,
-        type = this.type.toTypeRequest(),
-        description = this.description
+        id = id,
+        numbers = numbers.toString(),
+        type = type.uppercase().toTypeRequest(),
+        description = description
+    )
+}
+
+fun ApiResponse<FactData>.mapToFactDBO(): FactDBO {
+    return FactDBO(
+        type = prepare().data.type,
+        description = prepare().data.text
     )
 }
 

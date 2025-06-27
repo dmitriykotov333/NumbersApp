@@ -1,5 +1,6 @@
 package com.kotdev.numbersapp.core.utils
 
+import android.content.Context
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import kotlinx.collections.immutable.persistentListOf
 
@@ -10,4 +11,6 @@ object Utils {
         TypeRequest.YEAR,
         TypeRequest.DATE
     )
+    const val FILTER_DATA_STORE = "FILTER_DATA_STORE"
+    const val SELECTED_TYPES = "selected_types"
 }

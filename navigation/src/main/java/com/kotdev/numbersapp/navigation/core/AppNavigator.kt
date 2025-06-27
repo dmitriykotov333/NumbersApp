@@ -1,11 +1,7 @@
 package com.kotdev.numbersapp.navigation.core
 
 import com.kotdev.numbersapp.navigation.core.destination.Destination
-import com.kotdev.numbersapp.navigation.destination.MainDestination
-import com.kotdev.numbersapp.navigation.destination.MainNumbersSaved
 import kotlinx.coroutines.flow.last
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import javax.inject.Inject
 
 class AppNavigator @Inject constructor() : Navigator() {

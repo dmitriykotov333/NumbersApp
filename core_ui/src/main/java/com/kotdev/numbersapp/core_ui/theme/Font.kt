@@ -26,11 +26,3 @@ val GOTHIC = FontFamily(
         ),
     )
 )
-
-val GROTESK = FontFamily(
-    fonts = listOf(
-        Font(
-            resId = R.font.grotesk_bold, FontWeight.Bold
-        )
-    )
-)

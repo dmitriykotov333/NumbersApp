@@ -4,8 +4,6 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.kotdev.numbersapp.database.fact.FactDBO
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HistoryDao {

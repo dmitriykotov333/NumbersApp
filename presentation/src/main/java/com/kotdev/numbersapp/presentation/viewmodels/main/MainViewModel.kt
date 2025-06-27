@@ -6,7 +6,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kotdev.numbersapp.core.api.StatusRequest
 import com.kotdev.numbersapp.core.api.wrapper
+import com.kotdev.numbersapp.core.resource.Resource
+import com.kotdev.numbersapp.core.resource.ResourceResolver
 import com.kotdev.numbersapp.core.viewmodel.BaseViewModel
+import com.kotdev.numbersapp.core_ui.R
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.data.FactRandomRepository
 import com.kotdev.numbersapp.data.datastore.FilterPreferences
@@ -26,6 +29,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +57,8 @@ class MainViewModel @Inject constructor(
     private val random: FactRandomRepository,
     private val db: FactDatabase,
     private val filterPrefs: FilterPreferences,
-    private val getHistoriesUseCase: GetHistoriesUseCase
+    private val getHistoriesUseCase: GetHistoriesUseCase,
+    private val resorcResolver: ResourceResolver
 ) : BaseViewModel<MainViewState, MainAction, MainEvent>(
     initialState = MainViewState()
 ) {
@@ -62,24 +67,8 @@ class MainViewModel @Inject constructor(
 
     private val selectedTypes = filterPrefs.getSelectedTypes()
         .stateIn(coroutineScope, SharingStarted.Eagerly, emptySet())
-    /*val histories: Flow<PagingData<HistoryUI>> = combine(
-        refreshTrigger,
-        selectedTypes
-    ) { _, selected ->
-        selected.map { it.toTypeRequest() }.toSet()
-    }.flatMapLatest { selectedSet ->
-        getHistoriesUseCase(selectedSet)
-    }.cachedIn(coroutineScope)
-    fun refreshHistories() {
-        refreshTrigger.value = Unit
-    }*/
-  /*  val histories: Flow<PagingData<HistoryUI>> = selectedTypes
-        .mapLatest { selected ->
-            getHistoriesUseCase(selected.map {
-                it.toTypeRequest()
-            }.toSet())
-        }
-        .cachedIn(coroutineScope)*/
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val histories: Flow<PagingData<HistoryUI>> = selectedTypes
         .flatMapLatest { selected ->
             getHistoriesUseCase(selected.map {
@@ -87,21 +76,6 @@ class MainViewModel @Inject constructor(
             }.toSet())
         }
         .cachedIn(coroutineScope)
-    /*val histories: Flow<PagingData<HistoryUI>> =
-        getHistoriesUseCase(selectedTypes.toList()).cachedIn(coroutineScope)*/
-
-    /* val histories = db.historyDao.histories().map {
-         it.map {
-             HistoryUI(
-                 id = it.id,
-                 numbers = it.numbers.toString(),
-                 type = it.type.uppercase().toTypeRequest(),
-                 description = it.description
-             )
-         }
-     }.stateIn(
-         coroutineScope, WhileSubscribed(5000), persistentListOf()
-     )*/
 
     init {
         repository.status.onEach {
@@ -148,10 +122,9 @@ class MainViewModel @Inject constructor(
                         )
                     }
                 }
-
-                else -> {}
             }
         }.launchIn(coroutineScope)
+
         coroutineScope.launch {
             random.firstMatch().collectLatest {
                 it.data?.forEach {
@@ -177,35 +150,30 @@ class MainViewModel @Inject constructor(
                     )
                 }
             }
+
             is MainEvent.ClickGetFact -> {
-                if (viewState.selectedRequest == TypeRequest.DATE) {
-                    if (viewState.number.isNotBlank() && viewState.numberSecond.isNotBlank()) {
-                        launchWrapper {
-                            repository.getFact(
-                                isRandom = false,
-                                request = viewState.selectedRequest.mapToFactRequest(
-                                    viewState.number.toInt(),
-                                    viewState.numberSecond.toInt()
-                                )
-                            )
-                        }
-                    } else {
-                        sendIntent(MainAction.ErrorShow("Empty field"))
-                    }
+                val number = viewState.number
+                val numberSecond = viewState.numberSecond
+                val isDateRequest = viewState.selectedRequest == TypeRequest.DATE
+
+                val isValid = if (isDateRequest) {
+                    number.isNotBlank() && numberSecond.isNotBlank()
                 } else {
-                    if (viewState.number.isNotBlank()) {
-                        launchWrapper {
-                            repository.getFact(
-                                isRandom = false,
-                                request = viewState.selectedRequest.mapToFactRequest(
-                                    viewState.number.toInt(),
-                                   0
-                                )
-                            )
-                        }
-                    } else {
-                        sendIntent(MainAction.ErrorShow("Empty field"))
-                    }
+                    number.isNotBlank()
+                }
+
+                if (!isValid) {
+                    sendIntent(MainAction.ErrorShow(resorcResolver.resolve(Resource.String(R.string.empty_field))))
+                    return
+                }
+
+                val request = viewState.selectedRequest.mapToFactRequest(
+                    number.toInt(),
+                    if (isDateRequest) numberSecond.toInt() else 0
+                )
+
+                launchWrapper {
+                    repository.getFact(isRandom = false, request = request)
                 }
             }
 
@@ -220,81 +188,44 @@ class MainViewModel @Inject constructor(
             }
 
             is MainEvent.ChangeNumber -> {
-                try {
-                    if (viewState.error.isError) {
-                        if (viewState.selectedRequest == TypeRequest.DATE) {
-                            if (viewEvent.value.toInt() <= 12) {
-                                updateState {
-                                    copy(
-                                        number = viewEvent.value,
-                                        error = viewState.error.copy(isError = false)
-                                    )
-                                }
-                            }
-                        } else {
-                            if (viewEvent.value.length <= 4) {
-                                updateState {
-                                    copy(
-                                        number = viewEvent.value,
-                                        error = viewState.error.copy(isError = false)
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        if (viewState.selectedRequest == TypeRequest.DATE) {
-                            if (viewEvent.value.toInt() <= 12) {
-                                updateState {
-                                    copy(
-                                        number = viewEvent.value,
-                                    )
-                                }
-                            }
-                        } else {
-                            if (viewEvent.value.length <= 4) {
-                                updateState {
-                                    copy(
-                                        number = viewEvent.value,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                val input = viewEvent.value
+                val isDateRequest = viewState.selectedRequest == TypeRequest.DATE
+
+                val isValid = try {
+                    if (isDateRequest) input.toIntOrNull()?.let { it in 1..12 } == true
+                    else input.length <= 4
                 } catch (t: Throwable) {
+                    false
+                }
+
+                if (isValid) {
+                    val newErrorState =
+                        if (viewState.error.isError) viewState.error.copy(isError = false) else viewState.error
                     updateState {
                         copy(
-                            number = "",
+                            number = input,
+                            error = newErrorState
                         )
                     }
+                } else {
+                    updateState { copy(number = "") }
                 }
             }
 
             is MainEvent.ChangeNumberSecond -> {
-                try {
-                    if (viewState.error.isError) {
-                        if (viewEvent.value.toInt() <= 31) {
-                            updateState {
-                                copy(
-                                    number = viewEvent.value,
-                                    error = viewState.error.copy(isError = false)
-                                )
-                            }
-                        }
-                    } else {
-                        if (viewEvent.value.toInt() <= 31) {
-                            updateState {
-                                copy(
-                                    numberSecond = viewEvent.value,
-                                )
-                            }
-                        }
-                    }
-                } catch (t: Throwable) {
+                val input = viewEvent.value
+                val isValid = input.toIntOrNull()?.let { it in 1..31 } == true
+
+                if (isValid) {
+                    val newErrorState = if (viewState.error.isError) viewState.error.copy(isError = false) else viewState.error
                     updateState {
                         copy(
-                            numberSecond = "",
+                            numberSecond = input,
+                            error = newErrorState
                         )
                     }
+                } else {
+                    updateState { copy(numberSecond = "") }
                 }
             }
 
@@ -327,7 +258,8 @@ class MainViewModel @Inject constructor(
         block: suspend () -> Unit
     ) {
         if (job != null) {
-            sendIntent(MainAction.ErrorShow("Please wait request in progress"))
+            sendIntent(MainAction.ErrorShow(
+                resorcResolver.resolve(Resource.String(R.string.request_progress))))
             return
         }
         job = coroutineScope.launch {

@@ -46,6 +46,7 @@ enum class ConnectivityStatus {
     Available, Unavailable, Losing, Lost, Retry
 }
 
+
 @Composable
 fun ConnectionCheckContent(status: ConnectivityStatus) {
 
@@ -55,43 +56,36 @@ fun ConnectionCheckContent(status: ConnectivityStatus) {
     var connectionSuccess by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(key1 = status, block = {
-        if (status == ConnectivityStatus.Retry) {
-            if (connectionLost) {
+
+    LaunchedEffect(key1 = status) {
+        when (status) {
+            ConnectivityStatus.Retry,
+            ConnectivityStatus.Available -> {
+                if (connectionLost) {
+                    connectionLost = false
+                    connectionSuccess = true
+                    delay(4000)
+                }
                 connectionLost = false
-                connectionSuccess = true
-                delay(4000)
+                connectionSuccess = false
             }
-            connectionLost = false
-            connectionSuccess = false
-        } else if (status == ConnectivityStatus.Available) {
-            if (connectionLost) {
-                connectionLost = false
-                connectionSuccess = true
-                delay(4000)
+            else -> {
+                connectionLost = true
+                connectionSuccess = false
             }
-            connectionLost = false
-            connectionSuccess = false
-        } else {
-            connectionLost = true
-            connectionSuccess = false
         }
-    })
+    }
    AnimatedVisibility(
-        visible =
-            if ((connectionSuccess && !connectionLost)) true
-            else if ((!connectionSuccess && connectionLost)) true
-            else if (!connectionLost) false else false
-    ) {
+        visible = connectionSuccess || connectionLost
+   ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .drawBehind {
-                    val backgroundColor = if (status == ConnectivityStatus.Unavailable)
-                        Color(0xD9AF2B23)
-                    else
-                        Color(0xD92B901A)
-
+                    val backgroundColor = when (status) {
+                        ConnectivityStatus.Unavailable -> Color(0xD9AF2B23)
+                        else -> Color(0xD92B901A)
+                    }
                     drawRect(color = backgroundColor)
                 }
                 .statusBarsPadding()

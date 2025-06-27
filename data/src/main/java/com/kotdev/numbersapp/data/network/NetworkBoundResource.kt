@@ -9,9 +9,7 @@ inline fun <ResultType, RequestType> networkBoundResource(
     crossinline fetch: suspend () -> RequestType,
     crossinline saveFetchResult: suspend (RequestType) -> Unit,
 ) = channelFlow {
-    val loading = launch { query().collect { send(StatusRequest.InProgress(it)) }
-    }
-
+    val loading = launch { query().collect { send(StatusRequest.InProgress(it)) } }
     try {
         saveFetchResult(fetch())
         loading.cancel()

@@ -13,7 +13,6 @@ fun ApiResponse<FactData>.toResult(): ApiResponse<FactData> {
               this
             }
         }
-
         else -> this
     }
 }

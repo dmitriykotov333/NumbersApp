@@ -115,9 +115,7 @@ internal fun HistoryContent(
                     )
                 }
             } else if (histories.loadState.refresh is LoadState.Error) {
-                item {
-
-                }
+                item {}
             } else if (
                 histories.itemCount == 0
             ) {

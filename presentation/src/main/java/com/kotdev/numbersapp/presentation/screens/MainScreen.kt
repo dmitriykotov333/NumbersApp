@@ -86,18 +86,6 @@ import coil.request.ImageRequest
 import com.kotdev.numbersapp.core_ui.R
 import com.kotdev.numbersapp.core_ui.components.AnnotatedText
 import com.kotdev.numbersapp.core_ui.components.GridContent
-import com.kotdev.numbersapp.core_ui.enums.TypeRequest
-import com.kotdev.numbersapp.core_ui.modifiers.ShimmerColor
-import com.kotdev.numbersapp.core_ui.modifiers.bounceClick
-import com.kotdev.numbersapp.core_ui.modifiers.noRippleClickable
-import com.kotdev.numbersapp.core_ui.modifiers.shimmer
-import com.kotdev.numbersapp.core_ui.theme.FORMULAR
-import com.kotdev.numbersapp.core_ui.theme.GOTHIC
-import com.kotdev.numbersapp.core_ui.theme.GROTESK
-import com.kotdev.numbersapp.core_ui.theme.Theme
-import com.kotdev.numbersapp.navigation.core.AppNavigator
-import com.kotdev.numbersapp.navigation.destination.DetailDestination
-import com.kotdev.numbersapp.navigation.destination.MainNumbersSaved
 import com.kotdev.numbersapp.presentation.screens.contents.CollapsingLayout
 import com.kotdev.numbersapp.presentation.screens.contents.FilterDialog
 import com.kotdev.numbersapp.presentation.screens.contents.HistoryContent
@@ -148,14 +136,7 @@ fun MainScreen(
                             contentDescription = null,
                         )
                         MainContent(
-                            count = states.count,
-                            description = states.description,
-                            error = states.error,
-                            isSending = states.isSending,
-                            isSendingRandom = states.isSendingRandom,
-                            number = states.number,
-                            numberSecond = states.numberSecond,
-                            type = states.selectedRequest,
+                            state = states,
                             eventHandler = viewModel::obtainEvent
                         )
                     }

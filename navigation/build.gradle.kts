@@ -13,8 +13,7 @@ android {
 }
 
 composeCompiler {
-    //stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+  reportsDestination = layout.buildDirectory.dir("compose_compiler")
     featureFlags = setOf(
         ComposeFeatureFlag.StrongSkipping.disabled(),
         ComposeFeatureFlag.OptimizeNonSkippingGroups

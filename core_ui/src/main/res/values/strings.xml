@@ -16,4 +16,8 @@
     <string name="placeholder_d">day</string>
     <string name="collapse">Collapse</string>
     <string name="something_error">Something error</string>
+    <string name="color_error">Color not defined for TypeRequest:</string>
+    <string name="type_error">String not defined for TypeRequest:</string>
+    <string name="empty_field">Empty field</string>
+    <string name="request_progress">Please wait request in progress</string>
 </resources>

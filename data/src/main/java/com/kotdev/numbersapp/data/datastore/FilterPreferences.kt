@@ -6,6 +6,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.kotdev.numbersapp.core.utils.Utils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -16,8 +17,8 @@ class FilterPreferences @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     companion object {
-        private val Context.dataStore by preferencesDataStore(name = "FILTER_DATA_STORE")
-        private val SELECTED_TYPES = stringSetPreferencesKey("selected_types")
+        private val Context.dataStore by preferencesDataStore(name = Utils.FILTER_DATA_STORE)
+        private val SELECTED_TYPES = stringSetPreferencesKey(name = Utils.SELECTED_TYPES)
     }
 
     private val dataStore = context.dataStore
