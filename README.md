@@ -44,3 +44,5 @@ https://github.com/user-attachments/assets/feef5e83-fab8-4c8f-b376-91cb230831f7
 | UI | 8 Hours |
 
 | Bussines | 8 Hours |
+
+local.properties = BASE_URL=http://numbersapi.com
