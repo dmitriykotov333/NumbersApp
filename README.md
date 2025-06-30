@@ -35,10 +35,5 @@ https://github.com/user-attachments/assets/4a9d0054-258b-4668-8504-c63df372a1b4
 
 https://github.com/user-attachments/assets/feef5e83-fab8-4c8f-b376-91cb230831f7
 
-### Approximate time spent on the project
-
-| UI | 8 Hours |
-
-| Bussines | 8 Hours |
 
 local.properties = BASE_URL=http://numbersapi.com
