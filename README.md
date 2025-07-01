@@ -24,6 +24,7 @@ This project is a fully functional Android app built entirely with Kotlin and Je
 - Year request and Random
 - Date request and Random
 - Paging list in room
+- Cache
 - Filter
 - Animations
 - Share content
