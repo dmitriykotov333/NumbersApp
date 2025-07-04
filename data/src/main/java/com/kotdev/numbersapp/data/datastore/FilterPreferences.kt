@@ -7,6 +7,7 @@ import javax.inject.Singleton
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.kotdev.numbersapp.core.utils.Utils
+import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -30,7 +31,14 @@ class FilterPreferences @Inject constructor(
     }
 
     fun getSelectedTypes(): Flow<Set<String>> = dataStore.data
-        .map { preferences -> preferences[SELECTED_TYPES] ?: emptySet() }
+        .map { preferences ->
+            preferences[SELECTED_TYPES] ?: setOf(
+                TypeRequest.MATH.name,
+                TypeRequest.TRIVIA.name,
+                TypeRequest.YEAR.name,
+                TypeRequest.DATE.name
+            )
+        }
 
     suspend fun getFirst(): Set<String> = dataStore.data
         .map { preferences -> preferences[SELECTED_TYPES] ?: emptySet() }.first()

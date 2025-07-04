@@ -27,7 +27,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,6 +64,7 @@ import com.kotdev.numbersapp.presentation.viewmodels.main.MainEvent
 import com.kotdev.numbersapp.presentation.viewmodels.main.MainViewModel
 import com.kotdev.numbersapp.presentation.viewmodels.main.MainViewState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.flow.debounce
 
 @Composable
 internal fun HistoryContent(
@@ -71,13 +74,40 @@ internal fun HistoryContent(
     paddingValues: PaddingValues,
     eventHandler: (MainEvent) -> Unit
 ) {
-    val listState = rememberLazyListState()
+
+    var scrollIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
+    var scrollOffset by rememberSaveable {
+        mutableStateOf(0)
+    }
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = scrollIndex,
+        initialFirstVisibleItemScrollOffset = scrollOffset
+    )
+
+    var previousItemCount by rememberSaveable { mutableStateOf(0) }
+
     LaunchedEffect(refreshTrigger) {
-        listState.animateScrollToItem(0)
+        if (refreshTrigger) {
+            listState.animateScrollToItem(0)
+        }
     }
     LaunchedEffect(histories.itemCount) {
-        listState.animateScrollToItem(0)
+        if (histories.itemCount != previousItemCount) {
+            previousItemCount = histories.itemCount
+            listState.scrollToItem(0)
+        }
     }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+            .debounce(500L)
+            .collect { (index, offset) ->
+                scrollIndex = index
+                scrollOffset = offset
+            }
+    }
+
     Column(
         modifier = modifier.then(
             Modifier

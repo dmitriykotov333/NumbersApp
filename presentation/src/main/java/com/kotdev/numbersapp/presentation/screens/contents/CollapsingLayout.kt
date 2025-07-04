@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,10 +58,10 @@ fun CollapsingLayout(
     content: @Composable (Modifier, Boolean) -> Unit
 ) {
     val localDensity = LocalDensity.current
-    var currentHeight by remember { mutableFloatStateOf(0f) }
-    var maxHeight by remember { mutableFloatStateOf(-1f) }
-    var minHeight by remember { mutableFloatStateOf(-1f) }
-    var close by remember { mutableStateOf(false) }
+    var currentHeight by rememberSaveable { mutableFloatStateOf(0f) }
+    var maxHeight by rememberSaveable { mutableFloatStateOf(-1f) }
+    var minHeight by rememberSaveable { mutableFloatStateOf(-1f) }
+    var close by rememberSaveable { mutableStateOf(false) }
     val animationProgress by remember(currentHeight, maxHeight, minHeight) {
         derivedStateOf {
             ((currentHeight - minHeight) / (maxHeight - minHeight)).coerceIn(0f, 1f)
@@ -116,7 +117,6 @@ fun CollapsingLayout(
                 Modifier
                     .onGloballyPositioned {
                         if (maxHeight == -1f) {
-                            close = !close
                             maxHeight = it.size.height.toFloat()
                         }
                     }
