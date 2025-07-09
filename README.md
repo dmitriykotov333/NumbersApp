@@ -29,6 +29,7 @@ This project is a fully functional Android app built entirely with Kotlin and Je
 - Animations
 - Share content
 - Open url
+- Animated background
 
 ### Showcase
 
