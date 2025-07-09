@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
@@ -20,10 +24,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -35,6 +42,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +75,7 @@ import com.kotdev.numbersapp.presentation.viewmodels.main.EditTextError
 import com.kotdev.numbersapp.presentation.viewmodels.main.MainEvent
 import com.kotdev.numbersapp.presentation.viewmodels.main.MainViewState
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.delay
 import kotlin.enums.EnumEntries
 
 @Composable
@@ -115,14 +124,24 @@ internal fun MainContent(
                 }
             )
             Spacer(Modifier.height(12.dp))
-            EditTextContent(
-                isSendingRandom = state.isSendingRandom,
-                error = state.error,
-                number = state.number,
-                numberSecond = state.numberSecond,
-                type = state.selectedRequest,
-                eventHandler = eventHandler
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                EditTextContent(
+                    error = state.error,
+                    number = state.number,
+                    numberSecond = state.numberSecond,
+                    type = state.selectedRequest,
+                    eventHandler = eventHandler
+                )
+                BouncingIconButton(
+                    isRotating = state.isSendingRandom,
+                    eventHandler = eventHandler
+                )
+                Spacer(Modifier.width(12.dp))
+            }
             Spacer(Modifier.height(6.dp))
             NumCounter(count = state.count)
             Spacer(Modifier.height(12.dp))

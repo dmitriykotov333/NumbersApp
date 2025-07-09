@@ -11,4 +11,5 @@ dependencies {
     implementation(libs.compose.shimmer)
     implementation(libs.androidx.core)
     implementation(libs.androidx.collections.immutable)
+    implementation(libs.composesensors)
 }

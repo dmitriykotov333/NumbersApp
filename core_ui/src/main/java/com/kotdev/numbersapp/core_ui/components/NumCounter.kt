@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,35 +41,34 @@ fun NumCounter(
     ) {
         val animatedDigits = remember { mutableStateListOf<Int>() }
         LaunchedEffect(count) {
-            val newDigits = count.splitToDigits()
-            if (animatedDigits.isEmpty()) {
-                repeat(4) { animatedDigits.add(0) }
-            }
-            if (animatedDigits.size < newDigits.size) {
-                val diff = newDigits.size - animatedDigits.size
-                repeat(diff) { animatedDigits.add(0, 0) }
-            }
+                val newDigits = count.splitToDigits()
+                if (animatedDigits.isEmpty()) {
+                    repeat(4) { animatedDigits.add(0) }
+                }
+                if (animatedDigits.size < newDigits.size) {
+                    val diff = newDigits.size - animatedDigits.size
+                    repeat(diff) { animatedDigits.add(0, 0) }
+                }
 
-            for (i in newDigits.indices) {
-                val from = animatedDigits[i]
-                val to = newDigits[i]
+                for (i in newDigits.indices) {
+                    val from = animatedDigits[i]
+                    val to = newDigits[i]
 
-                if (from != to) {
-                    if (to > from) {
-                        for (v in from..to step 1) {
-                            animatedDigits[i] = v
-                            delay(200)
-                        }
-                    } else {
-                        for (v in from downTo to) {
-                            animatedDigits[i] = v
-                            delay(200)
+                    if (from != to) {
+                        if (to > from) {
+                            for (v in from..to step 1) {
+                                animatedDigits[i] = v
+                                delay(200)
+                            }
+                        } else {
+                            for (v in from downTo to) {
+                                animatedDigits[i] = v
+                                delay(200)
+                            }
                         }
                     }
                 }
-            }
         }
-
         animatedDigits.forEachIndexed { index, digit ->
             AnimatedContent(
                 targetState = digit,
@@ -97,10 +97,12 @@ fun NumCounter(
                 )
             }
             if (index != animatedDigits.size) {
-                Spacer(Modifier
-                    .width(1.dp)
-                    .height(20.dp)
-                    .background(Color(0x9E133693)))
+                Spacer(
+                    Modifier
+                        .width(1.dp)
+                        .height(20.dp)
+                        .background(Color(0x9E133693))
+                )
             }
         }
     }

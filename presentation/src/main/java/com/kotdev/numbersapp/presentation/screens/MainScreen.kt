@@ -84,6 +84,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.kotdev.numbersapp.core_ui.R
+import com.kotdev.numbersapp.core_ui.components.AnimateBackground
 import com.kotdev.numbersapp.core_ui.components.AnnotatedText
 import com.kotdev.numbersapp.core_ui.components.GridContent
 import com.kotdev.numbersapp.presentation.screens.contents.CollapsingLayout
@@ -108,22 +109,12 @@ fun MainScreen(
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
             CollapsingLayout(
                 expandedContent = { modifier ->
                     Box(
                         modifier = modifier.height(500.dp), contentAlignment = Alignment.Center
                     ) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxWidth(),
-                            model = R.drawable.background,
-                            contentScale = ContentScale.FillBounds,
-                            contentDescription = null,
-                        )
+                        AnimateBackground()
                         GridContent(
                             modifier = Modifier.fillMaxSize()
                         )
@@ -154,7 +145,6 @@ fun MainScreen(
                     eventHandler = viewModel::obtainEvent
                 )
             }
-        }
 
         var showFilter by rememberSaveable {
             mutableStateOf(false)

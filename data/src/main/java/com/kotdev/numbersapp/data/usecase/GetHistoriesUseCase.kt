@@ -20,6 +20,7 @@ class GetHistoriesUseCase @Inject constructor(
             config = PagingConfig(
                 pageSize = 10,
                 initialLoadSize = 10,
+                prefetchDistance = 5,
                 enablePlaceholders = false
             )
         ) {

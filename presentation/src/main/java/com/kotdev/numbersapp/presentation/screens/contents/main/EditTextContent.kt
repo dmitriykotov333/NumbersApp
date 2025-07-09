@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,47 +63,86 @@ import kotlinx.coroutines.delay
 import java.net.Authenticator
 
 @Composable
-internal fun EditTextContent(
-    isSendingRandom: Boolean,
+internal fun RowScope.EditTextContent(
     error: EditTextError,
     number: String,
     numberSecond: String,
     type: UiType,
     eventHandler: (MainEvent) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(56.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xB30E1A5D)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    text = stringResource(id = type.stringId), style = TextStyle(
-                        textAlign = TextAlign.Center,
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        fontFamily = GOTHIC,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
 
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .weight(1f),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .height(56.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xB30E1A5D)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 12.dp),
+                text = stringResource(id = type.stringId), style = TextStyle(
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontFamily = GOTHIC,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            TextField(
+                value = number,
+                onValueChange = {
+                    eventHandler(MainEvent.ChangeNumber(it))
+                },
+                textStyle = TextStyle(
+                    textAlign = TextAlign.Start,
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontFamily = GOTHIC,
+                    fontWeight = FontWeight.Normal
+                ),
+                placeholder = {
+                    Text(
+                        text = if (type == TypeRequest.DATE) stringResource(R.string.placeholder_m) else stringResource(
+                            R.string.placeholder
+                        ),
+                        style = TextStyle(
+                            textAlign = TextAlign.Start,
+                            color = Color.LightGray,
+                            fontSize = 15.sp,
+                            fontFamily = GOTHIC,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.NumberPassword
+                ),
+                colors = TextFieldDefaults.colors().copy(
+                    focusedContainerColor = Color(0xD9061E3A),
+                    unfocusedContainerColor = Color(0xD9061E3A),
+                    disabledContainerColor = Color(0xD9061E3A),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    cursorColor = Color.White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            if (type == TypeRequest.DATE) {
                 TextField(
-                    value = number,
+                    value = numberSecond,
                     onValueChange = {
-                        eventHandler(MainEvent.ChangeNumber(it))
+                        eventHandler(MainEvent.ChangeNumberSecond(it))
                     },
                     textStyle = TextStyle(
                         textAlign = TextAlign.Start,
@@ -113,7 +153,7 @@ internal fun EditTextContent(
                     ),
                     placeholder = {
                         Text(
-                            text = if (type == TypeRequest.DATE) stringResource(R.string.placeholder_m) else stringResource(R.string.placeholder),
+                            text = stringResource(R.string.placeholder_d),
                             style = TextStyle(
                                 textAlign = TextAlign.Start,
                                 color = Color.LightGray,
@@ -136,95 +176,25 @@ internal fun EditTextContent(
                         focusedTextColor = Color.White,
                         cursorColor = Color.White
                     ),
-                    modifier = Modifier.fillMaxWidth().weight(1f)
-                )
-                if (type == TypeRequest.DATE) {
-                    TextField(
-                        value = numberSecond,
-                        onValueChange = {
-                            eventHandler(MainEvent.ChangeNumberSecond(it))
-                        },
-                        textStyle = TextStyle(
-                            textAlign = TextAlign.Start,
-                            color = Color.White,
-                            fontSize = 15.sp,
-                            fontFamily = GOTHIC,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.placeholder_d),
-                                style = TextStyle(
-                                    textAlign = TextAlign.Start,
-                                    color = Color.LightGray,
-                                    fontSize = 15.sp,
-                                    fontFamily = GOTHIC,
-                                    fontWeight = FontWeight.Normal
-                                )
-                            )
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.NumberPassword
-                        ),
-                        colors = TextFieldDefaults.colors().copy(
-                            focusedContainerColor = Color(0xD9061E3A),
-                            unfocusedContainerColor = Color(0xD9061E3A),
-                            disabledContainerColor = Color(0xD9061E3A),
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            cursorColor = Color.White
-                        ),
-                        modifier = Modifier.fillMaxWidth().weight(1f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(6.dp))
-            if (error.isError) {
-                Text(
-                    text = error.text,
-                    modifier = Modifier.fillMaxWidth(),
-                    style = TextStyle(
-                        textAlign = TextAlign.Start,
-                        color = Color.Red,
-                        fontSize = 11.sp,
-                        fontFamily = FORMULAR,
-                        fontWeight = FontWeight.Normal
-                    )
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                 )
             }
         }
-
-        val rotation = remember { Animatable(0f) }
-
-        LaunchedEffect(isSendingRandom) {
-            while (isSendingRandom) {
-                rotation.animateTo(
-                    targetValue = rotation.value + 360f,
-                    animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+        Spacer(Modifier.height(6.dp))
+        if (error.isError) {
+            Text(
+                text = error.text,
+                modifier = Modifier.fillMaxWidth(),
+                style = TextStyle(
+                    textAlign = TextAlign.Start,
+                    color = Color.Red,
+                    fontSize = 11.sp,
+                    fontFamily = FORMULAR,
+                    fontWeight = FontWeight.Normal
                 )
-                delay(200)
-            }
-        }
-
-        IconButton(
-            modifier = Modifier
-                .size(56.dp)
-                .background(Color(0xD9061E3A), CircleShape)
-                .bounceClick(), onClick = {
-                eventHandler(MainEvent.ClickGetFactRandom)
-            }) {
-            Image(
-                modifier = Modifier
-                    .graphicsLayer {
-                        rotationZ = rotation.value
-                    },
-                contentScale = ContentScale.Inside,
-                imageVector = ImageVector.vectorResource(R.drawable.random),
-                contentDescription = stringResource(id = R.string.random)
             )
         }
-        Spacer(Modifier.width(12.dp))
     }
 }

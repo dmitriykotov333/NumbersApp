@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -105,13 +106,11 @@ fun CollapsingLayout(
             .nestedScroll(nestedScrollConnection),
     ) {
         Box(
-            modifier = Modifier.then(
-                if (currentHeight != 0f) {
-                    Modifier
-                        .height(with(localDensity) { currentHeight.toDp() })
-                        .clipToBounds()
-                } else Modifier
-            )
+            modifier = if (currentHeight != 0f) {
+                Modifier
+                    .height(with(localDensity) { currentHeight.toDp() })
+                    .clipToBounds()
+            } else Modifier
         ) {
             expandedContent(
                 Modifier
@@ -120,7 +119,9 @@ fun CollapsingLayout(
                             maxHeight = it.size.height.toFloat()
                         }
                     }
-                    .alpha(animationProgress)
+                    .graphicsLayer {
+                        alpha = animationProgress
+                    }
             )
 
             collapsedContent(
@@ -130,7 +131,9 @@ fun CollapsingLayout(
                             minHeight = it.size.height.toFloat()
                         }
                     }
-                    .alpha(1 - animationProgress)
+                    .graphicsLayer {
+                        alpha = 1 - animationProgress
+                    }
             )
         }
 

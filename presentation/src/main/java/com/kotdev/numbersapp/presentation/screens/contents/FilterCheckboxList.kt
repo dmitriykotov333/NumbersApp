@@ -1,5 +1,6 @@
 package com.kotdev.numbersapp.presentation.screens.contents
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -50,40 +52,44 @@ fun FilterCheckboxList(
             Icon(Icons.Default.Close, "")
         }
         Utils.filter.forEach { type ->
-            val selectedTypes = state.selected
-            val isChecked = selectedTypes.contains(type)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (isChecked && selectedTypes.size == 1) return@clickable
-                        viewModel.obtainEvent(FilterEvent.SelectedType(type))
-
-                    }
-                    .padding(8.dp)
+            key(
+                type
             ) {
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = {
-                        if (it) {
+                val selectedTypes = state.selected
+                val isChecked = selectedTypes.contains(type)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            if (isChecked && selectedTypes.size == 1) return@clickable
                             viewModel.obtainEvent(FilterEvent.SelectedType(type))
-                        } else {
-                            if (selectedTypes.size == 1) return@Checkbox
-                            viewModel.obtainEvent(FilterEvent.SelectedType(type))
+
                         }
-                    }
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = type.name, style = TextStyle(
-                        textAlign = TextAlign.Start,
-                        color = Color.Black,
-                        fontSize = 18.sp,
-                        fontFamily = FORMULAR,
-                        fontWeight = FontWeight.Medium
+                        .padding(8.dp)
+                ) {
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = {
+                            if (it) {
+                                viewModel.obtainEvent(FilterEvent.SelectedType(type))
+                            } else {
+                                if (selectedTypes.size == 1) return@Checkbox
+                                viewModel.obtainEvent(FilterEvent.SelectedType(type))
+                            }
+                        }
                     )
-                )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = type.name, style = TextStyle(
+                            textAlign = TextAlign.Start,
+                            color = Color.Black,
+                            fontSize = 18.sp,
+                            fontFamily = FORMULAR,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
             }
         }
     }
