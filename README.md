@@ -2,6 +2,10 @@
 
 This project is a fully functional Android app built entirely with Kotlin and Jetpack Compose. 
 
+It is a work in progress 🚧.
+
+- Remove multiple items 
+
 ### Libraries and Tools
 
 - Jetpack Compose
