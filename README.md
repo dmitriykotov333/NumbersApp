@@ -28,6 +28,7 @@ It is a work in progress 🚧.
 - Paging list in room
 - Cache
 - Filter(Types, Descending)
+- Remove multiple items
 - Animations
 - Share content
 - Open url
