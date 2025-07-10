@@ -5,8 +5,6 @@ This project is a fully functional Android app built entirely with Kotlin and Je
 It is a work in progress 🚧.
 
 - Remove multiple items
-- Sorted list
-- Bug fix(Sorting error after adding to list)
 
 ### Libraries and Tools
 
@@ -31,7 +29,7 @@ It is a work in progress 🚧.
 - Date request and Random
 - Paging list in room
 - Cache
-- Filter
+- Filter(Types, Descending)
 - Animations
 - Share content
 - Open url
@@ -42,6 +40,9 @@ It is a work in progress 🚧.
 https://github.com/user-attachments/assets/4a9d0054-258b-4668-8504-c63df372a1b4
 
 https://github.com/user-attachments/assets/feef5e83-fab8-4c8f-b376-91cb230831f7
+
+https://github.com/user-attachments/assets/8bb61410-7b86-415d-b453-b51b5f6ba714
+
 
 
 local.properties = BASE_URL=http://numbersapi.com
