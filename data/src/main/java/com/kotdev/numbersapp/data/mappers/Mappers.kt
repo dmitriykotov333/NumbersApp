@@ -19,7 +19,8 @@ data class HistoryUI(
     val numbers: String,
     val type: TypeRequest,
     val description: String,
-    val time: String
+    val time: String,
+    val isSelected: Boolean = false
 )
 
 fun HistoryDBO.mapToHistoryUi(): HistoryUI {
@@ -28,7 +29,7 @@ fun HistoryDBO.mapToHistoryUi(): HistoryUI {
         numbers = numbers.toString(),
         type = type.uppercase().toTypeRequest(),
         description = description,
-        time = createdAt.time.formatCreatedAt()
+        time = createdAt.time.formatCreatedAt(),
     )
 }
 

@@ -21,4 +21,6 @@
     <string name="empty_field">Empty field</string>
     <string name="request_progress">Please wait request in progress</string>
     <string name="descending">Descending</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove">Delete %d selected items</string>
 </resources>

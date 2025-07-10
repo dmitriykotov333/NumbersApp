@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,12 +19,16 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,8 +57,10 @@ import androidx.paging.compose.itemKey
 import com.kotdev.numbersapp.core_ui.R
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.core_ui.enums.color
+import com.kotdev.numbersapp.core_ui.modifiers.ShimmerColor
 import com.kotdev.numbersapp.core_ui.modifiers.bounceClick
 import com.kotdev.numbersapp.core_ui.modifiers.noRippleClickable
+import com.kotdev.numbersapp.core_ui.modifiers.shimmer
 import com.kotdev.numbersapp.core_ui.theme.FORMULAR
 import com.kotdev.numbersapp.core_ui.theme.Theme
 import com.kotdev.numbersapp.data.mappers.HistoryUI
@@ -71,11 +78,11 @@ import kotlinx.coroutines.flow.debounce
 internal fun HistoryContent(
     modifier: Modifier = Modifier,
     histories: LazyPagingItems<HistoryUI>,
+    selectedIds: State<Set<Long>>,
     close: Boolean,
     paddingValues: PaddingValues,
     eventHandler: (MainEvent) -> Unit
 ) {
-
     var scrollIndex by rememberSaveable {
         mutableStateOf(0)
     }
@@ -87,8 +94,11 @@ internal fun HistoryContent(
         initialFirstVisibleItemScrollOffset = scrollOffset
     )
 
-
-
+    val idsIsNotEmpty by remember {
+        derivedStateOf {
+            selectedIds.value.isNotEmpty()
+        }
+    }
     LaunchedEffect(close) {
         if (close) {
             listState.scrollToItem(0)
@@ -131,13 +141,74 @@ internal fun HistoryContent(
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            if (idsIsNotEmpty) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(top = paddingValues.calculateTopPadding() + 20.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                eventHandler(MainEvent.Reset)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xD9061E3A),
+                                contentColor = Color.Black
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.cancel),
+                                modifier = Modifier.padding(vertical = 7.dp),
+                                style = TextStyle(
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontFamily = FORMULAR,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                eventHandler(MainEvent.RemoveItems)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xD37E0C37),
+                                contentColor = Color.Black
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.remove, selectedIds.value.size),
+                                modifier = Modifier.padding(vertical = 7.dp),
+                                style = TextStyle(
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontFamily = FORMULAR,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                        }
+                    }
+                }
+            }
             items(
                 count = histories.itemCount,
                 key = histories.itemKey(HistoryUI::id),
                 contentType = histories.itemContentType { it.type.name }
             ) { index ->
                 val paging: HistoryUI = histories[index] ?: return@items
-                HistoryItem(item = paging, eventHandler = eventHandler)
+                val isSelected = paging.id in selectedIds.value
+
+                HistoryItem(item = paging.copy(isSelected = isSelected), eventHandler = eventHandler)
             }
             if (histories.loadState.refresh is LoadState.Loading) {
                 item {

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.map
 import com.kotdev.numbersapp.core.api.StatusRequest
 import com.kotdev.numbersapp.core.api.wrapper
 import com.kotdev.numbersapp.core.resource.Resource
@@ -40,14 +41,17 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.toSet
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
 import javax.inject.Inject
@@ -73,6 +77,18 @@ class MainViewModel @Inject constructor(
 
     private val sortDescending = filterPrefs.getSortDescending()
 
+    val selectedIds = MutableStateFlow<Set<Long>>(emptySet())
+
+    private fun toggleSelection(id: Long) {
+        selectedIds.update { current ->
+            if (id in current) current - id else current + id
+        }
+    }
+
+    private fun clearSelection() {
+        selectedIds.value = emptySet()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val histories: Flow<PagingData<HistoryUI>> = combine(
         selectedTypes,
@@ -80,9 +96,10 @@ class MainViewModel @Inject constructor(
     ) { types, isDescending ->
         types to isDescending
     }.flatMapLatest { (selected, isDescending) ->
-        getHistoriesUseCase(selected.map {
-            it.toTypeRequest()
-        }.toSet(), isDescending)
+        getHistoriesUseCase(
+            selected.map { it.toTypeRequest() }.toSet(),
+            isDescending
+        )
     }.cachedIn(coroutineScope)
 
     init {
@@ -239,11 +256,30 @@ class MainViewModel @Inject constructor(
             }
 
             is MainEvent.OpenDetail -> {
-                navigator.push(
-                    DetailDestination(
-                        MainNumbersSaved(viewEvent.id)
+                if (selectedIds.value.isNotEmpty()) {
+                    toggleSelection(viewEvent.id)
+                } else {
+                    navigator.push(
+                        DetailDestination(
+                            MainNumbersSaved(viewEvent.id)
+                        )
                     )
-                )
+                }
+            }
+
+            is MainEvent.SelectedItem -> {
+                toggleSelection(viewEvent.id)
+            }
+
+            is MainEvent.Reset -> {
+                clearSelection()
+            }
+
+            is MainEvent.RemoveItems -> {
+                coroutineScope.launch {
+                    db.historyDao.deleteByIds(selectedIds.value)
+                    clearSelection()
+                }
             }
 
             is MainEvent.ToggleFullScreen -> {

@@ -106,45 +106,47 @@ fun MainScreen(
 ) {
     val states by viewModel.states().collectAsState()
     val histories = viewModel.histories.collectAsLazyPagingItems()
+    val selectedIds = viewModel.selectedIds.collectAsState()
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-            CollapsingLayout(
-                expandedContent = { modifier ->
-                    Box(
-                        modifier = modifier.height(500.dp), contentAlignment = Alignment.Center
-                    ) {
-                        AnimateBackground()
-                        GridContent(
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .alpha(.4f),
-                            model = R.drawable.grainy,
-                            contentScale = ContentScale.FillBounds,
-                            contentDescription = null,
-                        )
-                        MainContent(
-                            state = states,
-                            eventHandler = viewModel::obtainEvent
-                        )
-                    }
-
-                },
-                collapsedContent = { modifier ->
-
+        CollapsingLayout(
+            expandedContent = { modifier ->
+                Box(
+                    modifier = modifier.height(500.dp), contentAlignment = Alignment.Center
+                ) {
+                    AnimateBackground()
+                    GridContent(
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(.4f),
+                        model = R.drawable.grainy,
+                        contentScale = ContentScale.FillBounds,
+                        contentDescription = null,
+                    )
+                    MainContent(
+                        state = states,
+                        eventHandler = viewModel::obtainEvent
+                    )
                 }
-            ) { modifier, close ->
-                HistoryContent(
-                    modifier = modifier,
-                    histories = histories,
-                    close = close,
-                    paddingValues = paddingValues,
-                    eventHandler = viewModel::obtainEvent
-                )
+
+            },
+            collapsedContent = { modifier ->
+
             }
+        ) { modifier, close ->
+            HistoryContent(
+                modifier = modifier,
+                histories = histories,
+                selectedIds = selectedIds,
+                close = close,
+                paddingValues = paddingValues,
+                eventHandler = viewModel::obtainEvent
+            )
+        }
 
         var showFilter by rememberSaveable {
             mutableStateOf(false)
