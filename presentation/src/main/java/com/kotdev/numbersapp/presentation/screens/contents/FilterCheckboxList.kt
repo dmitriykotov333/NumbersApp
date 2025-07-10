@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kotdev.numbersapp.core.utils.Utils
+import com.kotdev.numbersapp.core_ui.R
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.core_ui.theme.FORMULAR
 import com.kotdev.numbersapp.core_ui.theme.GOTHIC
@@ -51,6 +53,33 @@ fun FilterCheckboxList(
         IconButton(onClick = onClick) {
             Icon(Icons.Default.Close, "")
         }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    viewModel.obtainEvent(FilterEvent.SelectedSort(!state.isDescending))
+                }
+                .padding(8.dp)
+        ) {
+            Checkbox(
+                checked = state.isDescending,
+                onCheckedChange = {
+                    viewModel.obtainEvent(FilterEvent.SelectedSort(!state.isDescending))
+                }
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.descending), style = TextStyle(
+                    textAlign = TextAlign.Start,
+                    color = Color.Black,
+                    fontSize = 18.sp,
+                    fontFamily = FORMULAR,
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
+        Spacer(Modifier.height(12.dp))
         Utils.filter.forEach { type ->
             key(
                 type

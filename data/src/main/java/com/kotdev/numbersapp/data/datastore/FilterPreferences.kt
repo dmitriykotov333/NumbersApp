@@ -20,6 +20,7 @@ class FilterPreferences @Inject constructor(
     companion object {
         private val Context.dataStore by preferencesDataStore(name = Utils.FILTER_DATA_STORE)
         private val SELECTED_TYPES = stringSetPreferencesKey(name = Utils.SELECTED_TYPES)
+        private val SORT_DESCENDING = booleanPreferencesKey(name = Utils.SORT_DESCENDING)
     }
 
     private val dataStore = context.dataStore
@@ -29,6 +30,22 @@ class FilterPreferences @Inject constructor(
             preferences[SELECTED_TYPES] = types
         }
     }
+
+    suspend fun saveSort(sortDescending: Boolean): Boolean {
+        dataStore.edit { preferences ->
+            if (sortDescending) {
+                preferences[SORT_DESCENDING] = true
+            } else {
+                preferences[SORT_DESCENDING] = false
+            }
+        }
+        return sortDescending
+    }
+
+    fun getSortDescending(): Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[SORT_DESCENDING] ?: true
+        }
 
     fun getSelectedTypes(): Flow<Set<String>> = dataStore.data
         .map { preferences ->

@@ -10,4 +10,5 @@ import kotlinx.collections.immutable.persistentListOf
 
 data class FilterViewState(
     val selected: ImmutableList<TypeRequest> = persistentListOf(),
+    val isDescending: Boolean = true,
 )

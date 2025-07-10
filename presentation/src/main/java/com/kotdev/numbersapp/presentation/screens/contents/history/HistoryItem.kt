@@ -117,5 +117,18 @@ internal fun HistoryItem(
                 fontWeight = FontWeight.Bold
             )
         )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = item.time,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = TextStyle(
+                textAlign = TextAlign.Start,
+                color = Color.Gray,
+                fontSize = 12.sp,
+                fontFamily = FORMULAR,
+                fontWeight = FontWeight.Normal
+            )
+        )
     }
 }

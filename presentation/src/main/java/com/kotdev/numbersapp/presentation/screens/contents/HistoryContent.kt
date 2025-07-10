@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -70,7 +71,7 @@ import kotlinx.coroutines.flow.debounce
 internal fun HistoryContent(
     modifier: Modifier = Modifier,
     histories: LazyPagingItems<HistoryUI>,
-    refreshTrigger: Boolean,
+    close: Boolean,
     paddingValues: PaddingValues,
     eventHandler: (MainEvent) -> Unit
 ) {
@@ -86,18 +87,20 @@ internal fun HistoryContent(
         initialFirstVisibleItemScrollOffset = scrollOffset
     )
 
-    var previousItemCount by rememberSaveable { mutableStateOf(0) }
 
-    LaunchedEffect(refreshTrigger) {
-        if (refreshTrigger) {
-            listState.animateScrollToItem(0)
-        }
-    }
-    LaunchedEffect(histories.itemCount) {
-        if (histories.itemCount != previousItemCount) {
-            previousItemCount = histories.itemCount
+
+    LaunchedEffect(close) {
+        if (close) {
             listState.scrollToItem(0)
         }
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { histories.loadState.refresh }
+            .collect { state ->
+                if (state is LoadState.NotLoading) {
+                    listState.animateScrollToItem(0)
+                }
+            }
     }
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }

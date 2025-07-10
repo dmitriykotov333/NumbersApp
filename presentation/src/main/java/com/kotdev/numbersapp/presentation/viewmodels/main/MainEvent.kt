@@ -4,7 +4,6 @@ package com.kotdev.numbersapp.presentation.viewmodels.main
 sealed class MainEvent {
     data object ClickGetFact : MainEvent()
     data object ClickGetFactRandom : MainEvent()
-    data object Refresh : MainEvent()
     data class ToggleFullScreen(val enable: Boolean) : MainEvent()
     data class OpenDetail(val id: Long) : MainEvent()
     data class SelectedType(val text: String) : MainEvent()

@@ -2,19 +2,24 @@ package com.kotdev.numbersapp.data.mappers
 
 import com.kotdev.numbersapp.core.api.ApiResponse
 import com.kotdev.numbersapp.core.api.prepare
+import com.kotdev.numbersapp.core.extensions.formatCreatedAt
 import com.kotdev.numbersapp.core_ui.enums.TypeRequest
 import com.kotdev.numbersapp.data.extensions.toTypeRequest
 import com.kotdev.numbersapp.database.fact.FactDBO
 import com.kotdev.numbersapp.database.history.HistoryDBO
 import com.kotdev.numbersapp.domain.entities.FactData
 import com.kotdev.numbersapp.domain.entities.FactRequest
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 data class HistoryUI(
     val id: Long,
     val numbers: String,
     val type: TypeRequest,
-    val description: String
+    val description: String,
+    val time: String
 )
 
 fun HistoryDBO.mapToHistoryUi(): HistoryUI {
@@ -22,7 +27,8 @@ fun HistoryDBO.mapToHistoryUi(): HistoryUI {
         id = id,
         numbers = numbers.toString(),
         type = type.uppercase().toTypeRequest(),
-        description = description
+        description = description,
+        time = createdAt.time.formatCreatedAt()
     )
 }
 

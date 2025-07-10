@@ -8,12 +8,8 @@ import java.util.Date
 internal class Converters {
 
     @TypeConverter
-    fun fromTimestamp(value: String?): Date? {
-        return value?.let { DateFormat.getDateTimeInstance().parse(it) }
-    }
+    fun fromTimestamp(value: Long?): Date? = value?.let { Date(it) }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): String? {
-        return date?.time?.let { DateFormat.getDateTimeInstance().format(it) }
-    }
+    fun dateToTimestamp(date: Date?): Long? = date?.time 
 }

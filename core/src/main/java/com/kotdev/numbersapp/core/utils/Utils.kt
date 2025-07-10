@@ -13,4 +13,5 @@ object Utils {
     )
     const val FILTER_DATA_STORE = "FILTER_DATA_STORE"
     const val SELECTED_TYPES = "selected_types"
+    const val SORT_DESCENDING = "sort_descending"
 }

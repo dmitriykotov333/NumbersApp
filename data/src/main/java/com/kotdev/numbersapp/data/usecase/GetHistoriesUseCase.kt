@@ -15,7 +15,7 @@ import javax.inject.Inject
 class GetHistoriesUseCase @Inject constructor(
     private val historyRepository: HistoryRepository
 ) {
-    operator fun invoke(filter: Set<TypeRequest>): Flow<PagingData<HistoryUI>> {
+    operator fun invoke(filter: Set<TypeRequest>, sortDescending: Boolean): Flow<PagingData<HistoryUI>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 10,
@@ -24,7 +24,7 @@ class GetHistoriesUseCase @Inject constructor(
                 enablePlaceholders = false
             )
         ) {
-            historyRepository.getPagingHistories(filter.map { it.name.lowercase() })
+            historyRepository.getPagingHistories(filter.map { it.name.lowercase() }, sortDescending)
         }.flow.map { pagingData ->
             pagingData.map { entity -> entity.mapToHistoryUi() }
         }

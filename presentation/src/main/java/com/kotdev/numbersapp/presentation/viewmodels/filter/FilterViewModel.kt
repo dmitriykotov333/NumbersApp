@@ -33,12 +33,14 @@ class FilterViewModel @Inject constructor(
                 }
             } else {
                 updateState {
-                    copy(selected = persistentListOf(
-                        TypeRequest.MATH,
-                        TypeRequest.TRIVIA,
-                        TypeRequest.YEAR,
-                        TypeRequest.DATE
-                    ))
+                    copy(
+                        selected = persistentListOf(
+                            TypeRequest.MATH,
+                            TypeRequest.TRIVIA,
+                            TypeRequest.YEAR,
+                            TypeRequest.DATE
+                        )
+                    )
                 }
             }
         }
@@ -46,6 +48,17 @@ class FilterViewModel @Inject constructor(
 
     override fun obtainEvent(viewEvent: FilterEvent) {
         when (viewEvent) {
+            is FilterEvent.SelectedSort -> {
+                coroutineScope.launch {
+                    val sortDescending = filterPrefs.saveSort(viewEvent.isDescending)
+                    updateState {
+                        copy(
+                            isDescending = sortDescending
+                        )
+                    }
+                }
+            }
+
             is FilterEvent.SelectedType -> {
                 coroutineScope.launch {
                     val selectedTypes: MutableList<TypeRequest> = viewState.selected.toMutableList()

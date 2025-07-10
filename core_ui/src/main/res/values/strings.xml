@@ -20,4 +20,5 @@
     <string name="type_error">String not defined for TypeRequest:</string>
     <string name="empty_field">Empty field</string>
     <string name="request_progress">Please wait request in progress</string>
+    <string name="descending">Descending</string>
 </resources>

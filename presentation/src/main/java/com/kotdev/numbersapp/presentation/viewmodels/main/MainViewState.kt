@@ -21,7 +21,6 @@ data class MainViewState(
     val description: String = "",
     val number: String = "",
     val numberSecond: String = "",
-    val refreshTrigger: Boolean = false,
     val histories: ImmutableList<HistoryUI> = persistentListOf(),
     val isSending: Boolean = false,
     val isSendingRandom: Boolean = false,

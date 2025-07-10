@@ -140,7 +140,7 @@ fun MainScreen(
                 HistoryContent(
                     modifier = modifier,
                     histories = histories,
-                    refreshTrigger = close,
+                    close = close,
                     paddingValues = paddingValues,
                     eventHandler = viewModel::obtainEvent
                 )

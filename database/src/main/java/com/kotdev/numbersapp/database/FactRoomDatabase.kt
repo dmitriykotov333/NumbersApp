@@ -13,7 +13,7 @@ import com.kotdev.numbersapp.database.history.HistoryDao
 
 @Database(
     entities = [FactDBO::class, HistoryDBO::class],
-    version = 2,
+    version = 3,
 )
 @TypeConverters(Converters::class)
 internal abstract class FactRoomDatabase : RoomDatabase() {

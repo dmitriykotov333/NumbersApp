@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.kotdev.numbersapp.core.api.StatusRequest
 import com.kotdev.numbersapp.core.api.wrapper
 import com.kotdev.numbersapp.core.resource.Resource
@@ -38,6 +39,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -68,14 +71,19 @@ class MainViewModel @Inject constructor(
     private val selectedTypes = filterPrefs.getSelectedTypes()
         .stateIn(coroutineScope, SharingStarted.Eagerly, emptySet())
 
+    private val sortDescending = filterPrefs.getSortDescending()
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val histories: Flow<PagingData<HistoryUI>> = selectedTypes
-        .flatMapLatest { selected ->
-            getHistoriesUseCase(selected.map {
-                it.toTypeRequest()
-            }.toSet())
-        }
-        .cachedIn(coroutineScope)
+    val histories: Flow<PagingData<HistoryUI>> = combine(
+        selectedTypes,
+        sortDescending
+    ) { types, isDescending ->
+        types to isDescending
+    }.flatMapLatest { (selected, isDescending) ->
+        getHistoriesUseCase(selected.map {
+            it.toTypeRequest()
+        }.toSet(), isDescending)
+    }.cachedIn(coroutineScope)
 
     init {
         repository.status.onEach {
@@ -86,7 +94,6 @@ class MainViewModel @Inject constructor(
                     }
                     updateState {
                         copy(
-                            refreshTrigger = !viewState.refreshTrigger,
                             count = it.response.data?.number ?: 0,
                             isSending = false,
                             isSendingRandom = false
@@ -143,14 +150,6 @@ class MainViewModel @Inject constructor(
 
     override fun obtainEvent(viewEvent: MainEvent) {
         when (viewEvent) {
-            is MainEvent.Refresh -> {
-                updateState {
-                    copy(
-                        refreshTrigger = !viewState.refreshTrigger
-                    )
-                }
-            }
-
             is MainEvent.ClickGetFact -> {
                 val number = viewState.number
                 val numberSecond = viewState.numberSecond
@@ -217,7 +216,8 @@ class MainViewModel @Inject constructor(
                 val isValid = input.toIntOrNull()?.let { it in 1..31 } == true
 
                 if (isValid) {
-                    val newErrorState = if (viewState.error.isError) viewState.error.copy(isError = false) else viewState.error
+                    val newErrorState =
+                        if (viewState.error.isError) viewState.error.copy(isError = false) else viewState.error
                     updateState {
                         copy(
                             numberSecond = input,
@@ -258,8 +258,11 @@ class MainViewModel @Inject constructor(
         block: suspend () -> Unit
     ) {
         if (job != null) {
-            sendIntent(MainAction.ErrorShow(
-                resorcResolver.resolve(Resource.String(R.string.request_progress))))
+            sendIntent(
+                MainAction.ErrorShow(
+                    resorcResolver.resolve(Resource.String(R.string.request_progress))
+                )
+            )
             return
         }
         job = coroutineScope.launch {
