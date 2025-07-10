@@ -4,7 +4,9 @@ This project is a fully functional Android app built entirely with Kotlin and Je
 
 It is a work in progress 🚧.
 
-- Remove multiple items 
+- Remove multiple items
+- Sorted list
+- Bug fix(Sorting error after adding to list)
 
 ### Libraries and Tools
 
