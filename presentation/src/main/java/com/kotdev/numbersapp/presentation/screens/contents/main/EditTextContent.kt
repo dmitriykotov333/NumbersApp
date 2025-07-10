@@ -64,7 +64,6 @@ import java.net.Authenticator
 
 @Composable
 internal fun RowScope.EditTextContent(
-    error: EditTextError,
     number: String,
     numberSecond: String,
     type: UiType,
@@ -181,20 +180,6 @@ internal fun RowScope.EditTextContent(
                         .weight(1f)
                 )
             }
-        }
-        Spacer(Modifier.height(6.dp))
-        if (error.isError) {
-            Text(
-                text = error.text,
-                modifier = Modifier.fillMaxWidth(),
-                style = TextStyle(
-                    textAlign = TextAlign.Start,
-                    color = Color.Red,
-                    fontSize = 11.sp,
-                    fontFamily = FORMULAR,
-                    fontWeight = FontWeight.Normal
-                )
-            )
         }
     }
 }

@@ -130,12 +130,12 @@ internal fun MainContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 EditTextContent(
-                    error = state.error,
                     number = state.number,
                     numberSecond = state.numberSecond,
                     type = state.selectedRequest,
                     eventHandler = eventHandler
                 )
+                ErrorContent(state.error)
                 BouncingIconButton(
                     isRotating = state.isSendingRandom,
                     eventHandler = eventHandler
